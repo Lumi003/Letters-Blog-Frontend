@@ -296,7 +296,7 @@
             <div class="card-body">
               <h2 class="card-title">${l.title}</h2>
               <p class="card-excerpt">${l.excerpt}</p>
-              <p class="card-meta">${formatDate(l.date)} &nbsp;·&nbsp; ${l.wordCount} words</p>
+             <p class="card-meta">${formatDate(l.date)} &nbsp;·&nbsp; ${Math.max(1, Math.round(l.wordCount / 200))} min read</p>
             </div>
           </article>`;
       }).join('');
@@ -325,7 +325,7 @@
 
         viewNum.textContent   = `Letter No. ${num !== null ? pad(num) : '—'}`;
         viewTitle.textContent = data.title;
-        viewMeta.textContent  = `${formatDate(data.date)}  ·  ${data.wordCount} words`;
+        viewMeta.textContent  = `${formatDate(data.date)}  ·  ${Math.max(1, Math.round(data.wordCount / 200))} min read`;
 
         const paras = data.content.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
         viewBody.innerHTML = paras.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
