@@ -6,6 +6,7 @@
   <title>Letters</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -216,6 +217,48 @@
       color: var(--ink);
     }
     .letter-body p { margin-bottom: 1.4em; }
+    .letter-body h1, .letter-body h2, .letter-body h3 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      color: var(--ink);
+      margin: 2em 0 0.6em;
+      line-height: 1.2;
+    }
+    .letter-body h1 { font-size: 2rem; font-style: italic; }
+    .letter-body h2 { font-size: 1.5rem; }
+    .letter-body h3 { font-size: 1.2rem; }
+    .letter-body strong { font-weight: 600; color: var(--ink); }
+    .letter-body em { font-style: italic; color: var(--ink-light); }
+    .letter-body a { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+    .letter-body a:hover { color: var(--ink); }
+    .letter-body blockquote {
+      border-left: 2px solid var(--paper-3);
+      margin: 1.5em 0;
+      padding: 0.5em 0 0.5em 1.5em;
+      color: var(--ink-light);
+      font-style: italic;
+    }
+    .letter-body ul, .letter-body ol { margin: 0 0 1.4em 1.5em; }
+    .letter-body li { margin-bottom: 0.4em; line-height: 1.7; }
+    .letter-body hr {
+      border: none;
+      border-top: 1px solid var(--paper-3);
+      margin: 2.5em auto;
+      width: 60%;
+    }
+    .letter-body code {
+      font-family: monospace;
+      background: var(--paper-2);
+      padding: 0.1em 0.4em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    /* colour helpers — use in md as <span class="red">word</span> */
+    .letter-body .red   { color: #8b2e2e; }
+    .letter-body .blue  { color: #2e4e8b; }
+    .letter-body .green { color: #2e6b3e; }
+    .letter-body .gold  { color: #a07020; }
+    .letter-body .faint { color: var(--ink-faint); }
     .wax-seal { display: block; text-align: center; margin: 3rem 0 1rem; font-size: 2rem; opacity: 0.35; }
 
     @media (max-width: 520px) {
@@ -260,7 +303,7 @@
     // ─────────────────────────────────────────────────────────────────────────
     // CONFIG — change this to your deployed backend URL after deploying
     // ─────────────────────────────────────────────────────────────────────────
-    const API_URL = 'https://letters-blog-backend.onrender.com';
+    const API_URL = 'http://localhost:3001';
     // ─────────────────────────────────────────────────────────────────────────
 
     const listEl    = document.getElementById('letters-list');
@@ -296,7 +339,7 @@
             <div class="card-body">
               <h2 class="card-title">${l.title}</h2>
               <p class="card-excerpt">${l.excerpt}</p>
-             <p class="card-meta">${formatDate(l.date)} &nbsp;·&nbsp; ${Math.max(1, Math.round(l.wordCount / 200))} min read</p>
+              <p class="card-meta">${formatDate(l.date)} &nbsp;·&nbsp; ${Math.max(1, Math.round(l.wordCount / 200))} min read</p>
             </div>
           </article>`;
       }).join('');
@@ -327,8 +370,8 @@
         viewTitle.textContent = data.title;
         viewMeta.textContent  = `${formatDate(data.date)}  ·  ${Math.max(1, Math.round(data.wordCount / 200))} min read`;
 
-        const paras = data.content.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
-        viewBody.innerHTML = paras.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+        // Render markdown → HTML
+        viewBody.innerHTML = marked.parse(data.content);
 
         history.pushState({ filename }, '', `#${encodeURIComponent(filename)}`);
       } catch {
